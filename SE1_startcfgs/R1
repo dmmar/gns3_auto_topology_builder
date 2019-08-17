@@ -1,0 +1,26 @@
+hostname R1
+enable secret cisco
+ip domain name nac.local
+username cisco privilege 15 secret cisco
+crypto key generate rsa label SSH_KEY modulus 2048
+ip ssh version 2
+line vty 0 4
+logging synchronous
+login local
+transport input ssh
+!
+line con 0
+logging synchronous
+!
+interface GigabitEthernet0/1
+ description R1_p2p_R2
+ ip address 1.1.1.1 255.255.255.252
+ no shut
+!
+interface GigabitEthernet0/2
+ description R1_p2p_R3
+ ip address 2.2.2.1 255.255.255.252
+ no shut
+!
+do wr
+!

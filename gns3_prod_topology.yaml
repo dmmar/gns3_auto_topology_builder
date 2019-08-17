@@ -5,6 +5,13 @@ gns3_host_ip: '172.30.33.200' # for [gns3_send_start_config_telnet]
 START_CFGS_PATH: 'PROD_START_CFGS/' # for [gns3_send_start_config_telnet]
 MGMT-SW: 'MGMT-SW' # for [gns3_create_mgmt_links]
 
+# global_delay_factor for [gns3_send_start_config_telnet]
+# I used a global delay parameter because
+# my GNS3 server is located far away from me (380>= latency).
+# info https://ktbyers.github.io/netmiko/docs/netmiko/
+
+global_delay_factor: 4
+
 # Assigned appliances IDs from GNS3 topology file
 # Manually created ethernet 'MGMT-SW' switch on 24 ports
 ETHSW24P_ID: '6b72e394-8d86-4e7c-976f-57da038e8145' # for [gns3_create_nodes]

@@ -1,0 +1,55 @@
+---
+project_name: 'gns3_simple_topology_1'
+gns3_server: 'http://172.30.33.200:3080'
+gns3_host_ip: '172.30.33.200' # for [gns3_send_start_config_telnet]
+START_CFGS_PATH: 'SE1_startcfgs/' # for [gns3_send_start_config_telnet]
+MGMT-SW: # skip [gns3_create_mgmt_links]
+
+# global_delay_factor for [gns3_send_start_config_telnet]
+# I used a global delay parameter because
+# my GNS3 server is located far away from me (380>= latency).
+# info https://ktbyers.github.io/netmiko/docs/netmiko/
+
+global_delay_factor: 4
+
+# Available appliances are IOSL2 (IOSvL2), IOSL3 (IOSv), VASA (vASA), VYOS118 (VyOS), and VSRX17R1 (vSRX)
+# Built-in appliances are VPCS (VPCS), CLOUD (Cloud), and ETHSW24P (Ethernet switch)
+gns3_nodes:
+# The following nodes will be created in the GNS3 project
+# ip_mgmt: - that IP uses for communication with the node via SSH from outside
+  # Node1
+  - appliance: IOSL3
+    name: R1
+  # Node2
+  - appliance: IOSL3
+    name: R2
+  # Node3
+  - appliance: IOSL3
+    name: R3
+
+gns3_links:
+# The following link pairs describe P2P ethernet connections between nodes
+  # Pair1
+  - node1_name: R1
+    node1_interface: '1' # Gi0/1
+    node2_name: R2
+    node2_interface: '1' # Gi0/1
+  # Pair2
+  - node1_name: R1
+    node1_interface: '2' # Gi0/2
+    node2_name: R3
+    node2_interface: '2' # Gi0/2
+  # Pair3
+  - node1_name: R2
+    node1_interface: '3' # Gi0/3
+    node2_name: R3
+    node2_interface: '3' # Gi0/3
+
+gns3_startup_config_telnet:
+# On these devices will be uploaded a startup config using telnet from 'START_CFGS_PATH:'
+  - name: R1
+  - name: R2
+  - name: R3
+gns3_mgmt_links:
+# The following devices will be connected to the 'MGMT-SW:' for remote access via SSH
+  - name: # skip [gns3_create_mgmt_links]

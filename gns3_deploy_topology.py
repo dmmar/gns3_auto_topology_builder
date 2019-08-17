@@ -255,8 +255,6 @@ def gns3_create_nodes(gns3_server, project_id, gns3_code_topology_data):
 
     # http://[GNS3_server_ip]:3080/v2/appliances
     # vASA 9.9.2 (supports a direct telnet console)
-    # Manually created ethernet switch on 24 ports
-    ETHSW24P_ID = gns3_code_topology_data['ETHSW24P_ID']
 
     list_images = []
     list_node_names = []
@@ -329,6 +327,8 @@ def gns3_create_nodes(gns3_server, project_id, gns3_code_topology_data):
                     print('that is not working, please try again.')
                     return
             elif node_image == 'ETHSW24P':
+                # Manually created ethernet switch on 24 ports
+                ETHSW24P_ID = gns3_code_topology_data['ETHSW24P_ID']
                 IMAGE_ID = ETHSW24P_ID
             else:
                 print('that is not working, please try again.')
@@ -551,106 +551,110 @@ def gns3_create_mgmt_links(gns3_server, project_id, gns3_code_topology_data):
     """)
 
     mgmt_sw = gns3_code_topology_data['MGMT-SW']
-    mgmt_sw_name = mgmt_sw
+    if mgmt_sw is None:
+        print('Skipped [create_mgmt_links] because MGMT-SW: null')
+        print('#' * 100)
+        return
+    else:
+        mgmt_sw_name = mgmt_sw
+        list_mgmt_nodes = []
 
-    list_mgmt_nodes = []
+        for node in gns3_code_topology_data['gns3_mgmt_links']:
+            name = node['name']
+            list_mgmt_nodes.append(name)
 
-    for node in gns3_code_topology_data['gns3_mgmt_links']:
-        name = node['name']
-        list_mgmt_nodes.append(name)
+        for node2 in list_mgmt_nodes:
+            print()
+            print('Pair:', mgmt_sw_name + ' - ' + node2)
 
-    for node2 in list_mgmt_nodes:
-        print()
-        print('Pair:', mgmt_sw_name + ' - ' + node2)
+            mgmt_sw_ints_used = []
+            node2_ints_used = []
 
-        mgmt_sw_ints_used = []
-        node2_ints_used = []
+            mgmt_sw_ints_existed = []
+            node2_ints_existed = []
 
-        mgmt_sw_ints_existed = []
-        node2_ints_existed = []
+            r_get_node_id = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/nodes')
+            r_get_node_id_dict = r_get_node_id.json()
 
-        r_get_node_id = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/nodes')
-        r_get_node_id_dict = r_get_node_id.json()
+            r_get_links = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/links')
+            r_get_links_dict = r_get_links.json()
 
-        r_get_links = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/links')
-        r_get_links_dict = r_get_links.json()
+            for dictionary2 in r_get_links_dict:
+                loop = dictionary2['nodes']
+                for dictionary_node in r_get_node_id_dict:
+                    node_name_local = dictionary_node['name']
+                    if mgmt_sw == node_name_local:
+                        print(mgmt_sw, 'that device is existed in GNS3 project.')
+                        mgmt_sw = dictionary_node['node_id']
+                    if node2 == node_name_local:
+                        print(node2, 'that device is existed in GNS3 project.')
+                        node2 = dictionary_node['node_id']
 
-        for dictionary2 in r_get_links_dict:
-            loop = dictionary2['nodes']
-            for dictionary_node in r_get_node_id_dict:
-                node_name_local = dictionary_node['name']
-                if mgmt_sw == node_name_local:
-                    print(mgmt_sw, 'that device is existed in GNS3 project.')
-                    mgmt_sw = dictionary_node['node_id']
-                if node2 == node_name_local:
-                    print(node2, 'that device is existed in GNS3 project.')
-                    node2 = dictionary_node['node_id']
+                for index, item in enumerate(loop):
+                        a = item
+                        node_id = a['node_id']
+                        if mgmt_sw == node_id:
+                            for key, value in a.items():
+                                if key == 'port_number':
+                                    mgmt_sw_ints_used.append(value)
+                        if node2 == node_id:
+                            for key, value in a.items():
+                                if key == 'adapter_number':
+                                    node2_ints_used.append(value)
 
-            for index, item in enumerate(loop):
-                    a = item
-                    node_id = a['node_id']
-                    if mgmt_sw == node_id:
+            for dictionary_node_id in r_get_node_id_dict:
+                if mgmt_sw == dictionary_node_id['node_id']:
+                    loop1 = dictionary_node_id['ports']
+                    for index, item in enumerate(loop1):
+                        a = item
                         for key, value in a.items():
                             if key == 'port_number':
-                                mgmt_sw_ints_used.append(value)
-                    if node2 == node_id:
+                                mgmt_sw_ints_existed.append(value)
+
+                if node2 == dictionary_node_id['node_id']:
+                    loop2 = dictionary_node_id['ports']
+                    for index, item in enumerate(loop2):
+                        a = item
                         for key, value in a.items():
                             if key == 'adapter_number':
-                                node2_ints_used.append(value)
+                                node2_ints_existed.append(value)
 
-        for dictionary_node_id in r_get_node_id_dict:
-            if mgmt_sw == dictionary_node_id['node_id']:
-                loop1 = dictionary_node_id['ports']
-                for index, item in enumerate(loop1):
-                    a = item
-                    for key, value in a.items():
-                        if key == 'port_number':
-                            mgmt_sw_ints_existed.append(value)
+            diff1 = set(mgmt_sw_ints_existed) - set(mgmt_sw_ints_used)
 
-            if node2 == dictionary_node_id['node_id']:
-                loop2 = dictionary_node_id['ports']
-                for index, item in enumerate(loop2):
-                    a = item
-                    for key, value in a.items():
-                        if key == 'adapter_number':
-                            node2_ints_existed.append(value)
+            mgmt_sw_ints_free = list(diff1)
 
-        diff1 = set(mgmt_sw_ints_existed) - set(mgmt_sw_ints_used)
+            def func_random_link_mgmt_sw():
+                while mgmt_sw_ints_free:
+                    random_link_mgmt_sw = random.choice(mgmt_sw_ints_free)
+                    print()
+                    print(random_link_mgmt_sw, 'random interface for', mgmt_sw_name)
+                    return random_link_mgmt_sw
 
-        mgmt_sw_ints_free = list(diff1)
+            port_number_1 = func_random_link_mgmt_sw()
+            adapter_number_2 = '0'
 
-        def func_random_link_mgmt_sw():
-            while mgmt_sw_ints_free:
-                random_link_mgmt_sw = random.choice(mgmt_sw_ints_free)
+            mgmt_sw_id = '"' + mgmt_sw + '"'
+            node2_id = '"' + node2 + '"'
+
+            payload = '{"nodes": [{"adapter_number": 0, "node_id": ' + str(mgmt_sw_id) + \
+                      ', "port_number": ' + str(port_number_1) + '}, {"adapter_number": ' + \
+                      str(adapter_number_2) + ', "node_id": ' + str(node2_id) + ', "port_number": 0}]}'
+
+            r_create_mgmt_link = requests.post(gns3_server + '/v2/projects/' + project_id + '/links',
+                                               data=payload)
+
+            if r_create_mgmt_link:
+                r_create_mgmt_link_dict = r_create_mgmt_link.json()
                 print()
-                print(random_link_mgmt_sw, 'random interface for', mgmt_sw_name)
-                return random_link_mgmt_sw
-
-        port_number_1 = func_random_link_mgmt_sw()
-        adapter_number_2 = '0'
-
-        mgmt_sw_id = '"' + mgmt_sw + '"'
-        node2_id = '"' + node2 + '"'
-
-        payload = '{"nodes": [{"adapter_number": 0, "node_id": ' + str(mgmt_sw_id) + \
-                  ', "port_number": ' + str(port_number_1) + '}, {"adapter_number": ' + \
-                  str(adapter_number_2) + ', "node_id": ' + str(node2_id) + ', "port_number": 0}]}'
-
-        r_create_mgmt_link = requests.post(gns3_server + '/v2/projects/' + project_id + '/links',
-                                           data=payload)
-
-        if r_create_mgmt_link:
-            r_create_mgmt_link_dict = r_create_mgmt_link.json()
-            print()
-            print('#' * 50)
-            print('New Link-ID:', r_create_mgmt_link_dict['link_id'])
-            print('#' * 50)
-        else:
-            print(r_create_mgmt_link)
-            print('A link pair is already created in the GNS3 project. Project ID:', project_id)
-            print('=' * 100)
-            continue
-    print('=' * 100)
+                print('#' * 50)
+                print('New Link-ID:', r_create_mgmt_link_dict['link_id'])
+                print('#' * 50)
+            else:
+                print(r_create_mgmt_link)
+                print('A link pair is already created in the GNS3 project. Project ID:', project_id)
+                print('=' * 100)
+                continue
+        print('=' * 100)
 
 
 def gns3_ping_devices(gns3_code_topology_data):
@@ -695,7 +699,7 @@ def main():
     # global_delay_factor for [gns3_send_start_config_telnet]
     # I used a global delay parameter because
     # my GNS3 server is located far away from me (380>= latency).
-    global_delay_factor = 4
+    global_delay_factor = gns3_code_topology_data['global_delay_factor']
     print('#' * 100)
     print('Deploying GNS3 topology from:', gns3_topology_file)
     print('Current GNS3 server is', gns3_server)
