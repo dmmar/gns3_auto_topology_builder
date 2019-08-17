@@ -1,0 +1,16 @@
+hostname SW3
+enable secret cisco
+ip domain name nac.local
+username cisco privilege 15 secret cisco
+crypto key generate rsa label SSH_KEY modulus 2048
+ip ssh version 2
+line vty 0 4
+logging synchronous
+login local
+transport input ssh
+!
+line con 0
+logging synchronous
+!
+do wr
+!

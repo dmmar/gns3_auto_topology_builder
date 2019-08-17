@@ -451,7 +451,8 @@ def gns3_send_start_config_telnet(gns3_server, project_id, gns3_code_topology_da
 
     for node_name in list_start_config_nodes:
         print()
-        print('Applying startup config to', node_name + ' from', gns3_code_topology_data['START_CFGS_PATH'] + node_name)
+        print('Applying startup config to', node_name + ' from',
+              '[', gns3_code_topology_data['START_CFGS_PATH'] + node_name, ']')
         print()
 
         r_get_nodes = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/nodes')
@@ -459,6 +460,24 @@ def gns3_send_start_config_telnet(gns3_server, project_id, gns3_code_topology_da
 
         for dictionary_node in r_get_nodes_dict:
             if dictionary_node['name'] == node_name:
+                # For VPCS
+                if dictionary_node['node_type'] == 'vpcs':
+                    device_type = 'generic_termserver_telnet'
+
+                    config_path = os.path.abspath(START_CFGS_PATH + node_name)
+                    telnet_port = dictionary_node['console']
+
+                    device = {
+                        "host": gns3_host_ip,
+                        "device_type": device_type,
+                        "port": telnet_port,
+                        "global_delay_factor": global_delay_factor
+                    }
+
+                    net_connect = Netmiko(**device)
+                    net_connect.send_config_from_file(config_file=config_path, exit_config_mode=False)
+                    net_connect.disconnect()
+                    continue
                 # For VyOS.
                 if dictionary_node['port_name_format'] == 'eth{0}':
                     device_type = 'generic_termserver_telnet'
@@ -470,6 +489,7 @@ def gns3_send_start_config_telnet(gns3_server, project_id, gns3_code_topology_da
                         "host": gns3_host_ip,
                         "device_type": device_type,
                         "port": telnet_port,
+                        "global_delay_factor": global_delay_factor
                     }
 
                     vyos = pexpect.spawn('telnet ' + gns3_host_ip + ' ' + str(telnet_port))
