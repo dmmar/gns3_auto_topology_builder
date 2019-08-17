@@ -2,7 +2,7 @@
 project_name: 'gns3_simple_topology_1'
 gns3_server: 'http://172.30.33.200:3080'
 gns3_host_ip: '172.30.33.200' # for [gns3_send_start_config_telnet]
-START_CFGS_PATH: 'SE1_startcfgs/' # for [gns3_send_start_config_telnet]
+START_CFGS_PATH: 'Examples/ex1/SE1_startcfgs/' # for [gns3_send_start_config_telnet]
 MGMT-SW: # skip [gns3_create_mgmt_links]
 
 # global_delay_factor for [gns3_send_start_config_telnet]
