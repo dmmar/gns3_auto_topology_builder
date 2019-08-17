@@ -215,8 +215,19 @@ def gns3_start_all_nodes(gns3_server, project_id):
 
     for dictionary_node in r_get_nodes_dict:
         if dictionary_node['status'] == 'stopped':
+            # For Built-in VPCS, starting time 5 sec.
+            if dictionary_node['node_type'] == 'vpcs':
+                print(dictionary_node['name'], 'is starting.', 'node-id:', dictionary_node['node_id'])
+                print('Starting time is 5 sec.')
+                node_id = dictionary_node['node_id']
+                url_start_node = gns3_server + '/v2/projects/' + str(project_id) + '/nodes/' + node_id + '/start'
+                requests.post(url=url_start_node)
+                print(time.ctime())
+                print('#' * 100)
+                time.sleep(5)
+                print(dictionary_node['name'], 'is loaded.', time.ctime())
             # For Juniper vSRX, starting time 10 min.
-            if dictionary_node['port_name_format'] == 'ge-0/0/{0}':
+            elif dictionary_node['port_name_format'] == 'ge-0/0/{0}':
                 print(dictionary_node['name'], 'is starting.', 'node-id:', dictionary_node['node_id'])
                 print('Starting time is 10 min.')
                 node_id = dictionary_node['node_id']
@@ -225,6 +236,7 @@ def gns3_start_all_nodes(gns3_server, project_id):
                 print(time.ctime())
                 print('#' * 100)
                 time.sleep(600)
+                print(dictionary_node['name'], 'is loaded.', time.ctime())
             # For other GNS3 appliances, starting time 1 min.
             else:
                 print(dictionary_node['name'], 'is starting.', 'node-id:', dictionary_node['node_id'])
@@ -235,6 +247,7 @@ def gns3_start_all_nodes(gns3_server, project_id):
                 print(time.ctime())
                 print('#' * 100)
                 time.sleep(60)
+                print(dictionary_node['name'], 'is loaded.', time.ctime())
         else:
             print(dictionary_node['name'], 'is working,', 'telnet port:',
                   dictionary_node['console'], ', node-id:', dictionary_node['node_id'])
@@ -452,7 +465,7 @@ def gns3_send_start_config_telnet(gns3_server, project_id, gns3_code_topology_da
     for node_name in list_start_config_nodes:
         print()
         print('Applying startup config to', node_name + ' from',
-              '[', gns3_code_topology_data['START_CFGS_PATH'] + node_name, ']')
+              '[' + gns3_code_topology_data['START_CFGS_PATH'] + node_name + ']')
         print()
 
         r_get_nodes = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/nodes')
@@ -479,7 +492,7 @@ def gns3_send_start_config_telnet(gns3_server, project_id, gns3_code_topology_da
                     net_connect.disconnect()
                     continue
                 # For VyOS.
-                if dictionary_node['port_name_format'] == 'eth{0}':
+                elif dictionary_node['port_name_format'] == 'eth{0}':
                     device_type = 'generic_termserver_telnet'
 
                     config_path = os.path.abspath(START_CFGS_PATH + node_name)
@@ -732,11 +745,12 @@ def main():
     gns3_create_nodes(gns3_server, project_id, gns3_code_topology_data)
     # Creates link pairs from [gns3_links] in the topology file.
     gns3_create_many_links(gns3_server, project_id, gns3_code_topology_data)
-    # Starts all nodes.
+    # Starts all nodes. VPCS starting time 5 sec, JunOS vSRX starting time 10 min,
+    # other such as Cisco IOSv, IOSvL2, etc. starting time 1 min.
     gns3_start_all_nodes(gns3_server, project_id)
-    # Shows available nodes.
+    # Shows available nodes in the project.
     gns3_show_available_nodes(gns3_server, project_id)
-    # Shows connected links.
+    # Shows connected links in the project.
     gns3_show_links(gns3_server, project_id)
     # Sends startup config for nodes from [gns3_startup_config_telnet] in the topology file.
     gns3_send_start_config_telnet(gns3_server, project_id, gns3_code_topology_data, global_delay_factor)
