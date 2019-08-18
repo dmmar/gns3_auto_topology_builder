@@ -7,7 +7,7 @@
    
    The auto_builder can be useful in combination with CI/CD. For example, to build a development environment for a Network Engineer.
    
-   The main idea was to do not open GNS3 GUI interface to communicate with devices and use it like a code because my GNS3 server is located far away from me [>=380ms.] and it was hard to use GUI interface.
+   The main idea was to do not open GNS3 GUI interface to create/delete/connect devices and use it like a code because my GNS3 server is located far away from me [>=380ms.] and it was hard to use GUI interface.
    
    You can find some examples in [Examples](https://github.com/dmmar/gns3_auto_topology_builder/blob/master/Examples) and [NetasCode_example](https://github.com/dmmar/gns3_auto_topology_builder/blob/master/NetasCode_example) folders.
    
