@@ -36,7 +36,7 @@
   
     For that, you can use a simple python3 script which will show you all current appliances on your GNS3 server.
     Those appliances names you can copy and paste to the topology file (.yaml).
-    * I have used mine appliances names and IP addresses to make these examples. For you they can be different.*
+    * I have used mine GNS3 server IP, appliances names and IP addresses to make these examples. For you they can be different.*
     
     Use the following to get appliances names/ids:
     # python3 gns3_show_appliances.py -s http://[<IP>:<port>]
@@ -50,13 +50,14 @@
     # python3 gns3_deploy_topology.py -f Examples/ex2/gns3_simple_topology_2.yaml
     # python3 gns3_deploy_topology.py -f Examples/ex3/gns3_simple_topology_3.yaml
     
-## Running NetasCode examples:
+## Running NetasCode example:
 
-    You can use these examples to deploy GNS3 topologies of the virtual fictional company 'X' and play with network automation.
+    You can use this example to deploy GNS3 topologies for dev/test/prod env. of the virtual fictional company 'X' and play with network automation.
    More information: https://github.com/dmmar/netascode
     
-    [NetasCode examples:]
+    [NetasCode example:]
     * Please, before run a script look at the topology file (.yaml) and the diagram (.png)
+    * I have used mine GNS3 server IP, appliances names and IP addresses to make the example. For you they can be different.*
     Also, please read * Important notes section *
     
     # python3 gns3_deploy_topology.py -f NetasCode_example/gns3_dev_topology.yaml
