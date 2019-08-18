@@ -15,7 +15,7 @@
 
    *The script does not support GNS3 server authentication login/pass for now.*
    
-   P.S. Author is not an expert, he is learning how to code. Errors can exist. 
+   **P.S. Author is not an expert, he is learning how to code. Errors can exist.**
    
    I would appreciate any feedback. Thank you!
 
