@@ -30,7 +30,7 @@
     # git clone https://github.com/dmmar/gns3_auto_topology_builder
     # pip3 install -r requirements.txt
     
-## Running the simple examples:
+## Running simple examples:
 
     The most important part is to get the right names of appliances from a GNS3 server.
   
@@ -50,10 +50,10 @@
     # python3 gns3_deploy_topology.py -f Examples/ex2/gns3_simple_topology_2.yaml
     # python3 gns3_deploy_topology.py -f Examples/ex3/gns3_simple_topology_3.yaml
     
-## Running the NetasCode examples:
+## Running NetasCode examples:
 
     You can use these examples to deploy GNS3 topologies of the virtual fictional company 'X' and play with network automation.
-    More info about it at https://github.com/dmmar/netascode
+   More information: https://github.com/dmmar/netascode
     
     [NetasCode examples:]
     * Please, before run a script look at the topology file (.yaml) and the diagram (.png)
