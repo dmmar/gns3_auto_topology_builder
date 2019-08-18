@@ -71,6 +71,14 @@
     
     - Startup configs applies using [Netmiko with pexpect via telnet], and for Cisco IOS, ASA, JunOS, VyOS, and VPCS.
     For more information look at [def gns3_send_start_config_telnet()] in gns3_deploy_topology.py script.
+
+    - global_delay_factor: 4
+    
+    # global_delay_factor for [gns3_send_start_config_telnet]
+    # I have used a global delay parameter because
+    # my GNS3 server is located far away from me (380>= latency).
+    # info https://ktbyers.github.io/netmiko/docs/netmiko/
+
     
 ## License
 
