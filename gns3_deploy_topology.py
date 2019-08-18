@@ -8,17 +8,12 @@ import random
 import time
 import subprocess
 import yaml
-import re
 import argparse
 
 
-def gns3_get_appliances_id(gns3_server):
+def gns3_get_appliances_names_and_id(gns3_server):
 
-    IOSL2_GET_ID = []
-    IOSL3_GET_ID = []
-    VASA_GET_ID = []
-    VYOS118_GET_ID = []
-    VSRX17R1_GET_ID = []
+    gns3_appliances_dict = {}
 
     show_appliances = requests.get(gns3_server + '/v2/appliances')
 
@@ -26,64 +21,16 @@ def gns3_get_appliances_id(gns3_server):
         show_appliances_dict = show_appliances.json()
         for appliance in show_appliances_dict:
 
-            match_IOSvL2 = re.search('Cisco IOSvL2', appliance['name'])
-            match_IOSv = re.search('Cisco IOSv', appliance['name'])
-            match_ASAv = re.search('Cisco ASAv', appliance['name'])
-            match_vSRX = re.search('vSRX', appliance['name'])
-            match_VYOS = re.search('VyOS', appliance['name'])
+            gns3_get_appliance_name = appliance['name']
+            gns3_get_appliance_id = appliance['appliance_id']
 
-            if match_IOSvL2:
-                IOSvL2_id = appliance['appliance_id']
-                IOSL2_GET_ID.append(IOSvL2_id)
-            elif match_IOSv:
-                IOSv_id = appliance['appliance_id']
-                IOSL3_GET_ID.append(IOSv_id)
-            elif match_ASAv:
-                ASAv_id = appliance['appliance_id']
-                VASA_GET_ID.append(ASAv_id)
-            elif match_vSRX:
-                vSRX_id = appliance['appliance_id']
-                VSRX17R1_GET_ID.append(vSRX_id)
-            elif match_VYOS:
-                VYOS_id = appliance['appliance_id']
-                VYOS118_GET_ID.append(VYOS_id)
+            gns3_show_appliances = gns3_get_appliance_name, gns3_get_appliance_id
 
-    if not IOSL2_GET_ID:
-        print('Appliance [IOSvL2] does not exist in the GNS3. To build a topology, please add that appliance.')
-        exit()
-    else:
-        IOSL2_str = ', '.join(IOSL2_GET_ID)
-        IOSL2_GET_ID = IOSL2_str
+            gns3_appliance_name = gns3_show_appliances[0]
+            gns3_appliance_id = gns3_show_appliances[1]
 
-    if not IOSL3_GET_ID:
-        print('Appliance [IOSv] does not exist in the GNS3. To build a topology, please add that appliance.')
-        exit()
-    else:
-        IOSL3_str = ', '.join(IOSL3_GET_ID)
-        IOSL3_GET_ID = IOSL3_str
-
-    if not VASA_GET_ID:
-        print('Appliance [vASA] does not exist in the GNS3. To build a topology, please add that appliance.')
-        exit()
-    else:
-        VASA_str = ', '.join(VASA_GET_ID)
-        VASA_GET_ID = VASA_str
-
-    if not VYOS118_GET_ID:
-        print('Appliance [VyOS] does not exist in the GNS3. To build a topology, please add that appliance.')
-        exit()
-    else:
-        VYOS118_str = ', '.join(VYOS118_GET_ID)
-        VYOS118_GET_ID = VYOS118_str
-
-    if not VSRX17R1_GET_ID:
-        print('Appliance [vSRX] does not exist in the GNS3. To build a topology, please add that appliance.')
-        exit()
-    else:
-        VSRX17R1_str = ', '.join(VSRX17R1_GET_ID)
-        VSRX17R1_GET_ID = VSRX17R1_str
-
-    return IOSL2_GET_ID, IOSL3_GET_ID, VASA_GET_ID, VYOS118_GET_ID, VSRX17R1_GET_ID
+            gns3_appliances_dict.update({gns3_appliance_name: gns3_appliance_id})
+    return gns3_appliances_dict
 
 
 def gns3_show_projects(gns3_server):
@@ -159,9 +106,6 @@ def gns3_show_links(gns3_server, project_id):
 
 def gns3_create_new_project(gns3_server, gns3_code_topology_data):
 
-    # Check GNS3 appliances before a new project will be created.
-    gns3_get_appliances_id(gns3_server)
-
     project_name = gns3_code_topology_data['project_name']
     payload_create_project = '{"name": "' + str(project_name) + '"}'
     create_project = requests.post(gns3_server + '/v2/projects', data=payload_create_project)
@@ -223,9 +167,9 @@ def gns3_start_all_nodes(gns3_server, project_id):
                 url_start_node = gns3_server + '/v2/projects/' + str(project_id) + '/nodes/' + node_id + '/start'
                 requests.post(url=url_start_node)
                 print(time.ctime())
-                print('#' * 100)
                 time.sleep(5)
                 print(dictionary_node['name'], 'is loaded.', time.ctime())
+                print('#' * 100)
             # For Juniper vSRX, starting time 10 min.
             elif dictionary_node['port_name_format'] == 'ge-0/0/{0}':
                 print(dictionary_node['name'], 'is starting.', 'node-id:', dictionary_node['node_id'])
@@ -234,9 +178,9 @@ def gns3_start_all_nodes(gns3_server, project_id):
                 url_start_node = gns3_server + '/v2/projects/' + str(project_id) + '/nodes/' + node_id + '/start'
                 requests.post(url=url_start_node)
                 print(time.ctime())
-                print('#' * 100)
                 time.sleep(600)
                 print(dictionary_node['name'], 'is loaded.', time.ctime())
+                print('#' * 100)
             # For other GNS3 appliances, starting time 1 min.
             else:
                 print(dictionary_node['name'], 'is starting.', 'node-id:', dictionary_node['node_id'])
@@ -245,9 +189,9 @@ def gns3_start_all_nodes(gns3_server, project_id):
                 url_start_node = gns3_server + '/v2/projects/' + str(project_id) + '/nodes/' + node_id + '/start'
                 requests.post(url=url_start_node)
                 print(time.ctime())
-                print('#' * 100)
                 time.sleep(60)
                 print(dictionary_node['name'], 'is loaded.', time.ctime())
+                print('#' * 100)
         else:
             print(dictionary_node['name'], 'is working,', 'telnet port:',
                   dictionary_node['console'], ', node-id:', dictionary_node['node_id'])
@@ -263,23 +207,17 @@ def gns3_create_nodes(gns3_server, project_id, gns3_code_topology_data):
     ╚═╝ ┴ └─┘┴    ╩.  ╚═╝┴└─└─┘┴ ┴ ┴ └─┘  ┘└┘└─┘─┴┘└─┘└─┘.
     """)
 
-    # Assigned appliances IDs
-    IOSL2_ID, IOSL3_ID, VASA_ID, VYOS118_ID, VSRX17R1_ID = gns3_get_appliances_id(gns3_server)
-
-    # http://[GNS3_server_ip]:3080/v2/appliances
-    # vASA 9.9.2 (supports a direct telnet console)
+    gns3_appliances = gns3_get_appliances_names_and_id(gns3_server)
 
     list_images = []
     list_node_names = []
-
-    IMAGE_ID = ''
 
     for node in gns3_code_topology_data['gns3_nodes']:
         appliance = node['appliance']
         name = node['name']
         r_get_nodes = requests.get(gns3_server + '/v2/projects/' + str(project_id) + '/nodes')
         r_get_nodes_dict = r_get_nodes.json()
-        # Checking existence in the topology file.
+        # Checking existence of nodes in the project from the topology file.
         for dictionary_node in r_get_nodes_dict:
             if dictionary_node['name'] == name:
                 console_port = dictionary_node['console']
@@ -292,77 +230,131 @@ def gns3_create_nodes(gns3_server, project_id, gns3_code_topology_data):
     if not list_node_names:
         print()
         print('All nodes were already created in GNS3 project.', 'Project ID:', project_id)
+        print('#' * 100)
         return
     else:
+        # Creating new nodes from the topology file.
         for node_image, node_name in zip(list_images, list_node_names):
             print()
-            print('Pair:', node_image, node_name)
+            print('Pair:', '[' + node_image + ']', '[' + node_name + ']')
 
             payload_coordinates = '{"x": 0, "y": 0}'
             payload_create_node = '{"name": "' + node_name + '"}'
 
-            if node_image == 'IOSL2':
-                IMAGE_ID = IOSL2_ID
-            elif node_image == 'IOSL3':
-                IMAGE_ID = IOSL3_ID
-            elif node_image == 'VASA':
-                IMAGE_ID = VASA_ID
-            elif node_image == 'VYOS118':
-                IMAGE_ID = VYOS118_ID
-            elif node_image == 'VSRX17R1':
-                IMAGE_ID = VSRX17R1_ID
-            elif node_image == 'CLOUD':
-
-                cloud_payload = '{"name": "' + node_name + '", "node_type": "cloud", "compute_id": "local"}'
-                cloud_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes', data=cloud_payload)
-
-                if cloud_r:
-                    cloud_r_dict = cloud_r.json()
-                    cloud_new_id = cloud_r_dict['node_id']
-                    print(cloud_new_id)
-                    print(cloud_r_dict['name'], 'is created.')
-                    continue
-                else:
-                    print('that is not working, please try again.')
-                    return
-            elif node_image == 'VPCS':
-
-                vpcs_payload = '{"name": "' + node_name + '", "node_type": "vpcs", "compute_id": "local"}'
-                vpcs_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes', data=vpcs_payload)
-
-                if vpcs_r:
-                    vpcs_r_dict = vpcs_r.json()
-                    vpcs_new_id = vpcs_r_dict['node_id']
-                    print(vpcs_new_id)
-                    print(vpcs_r_dict['name'], 'is created.')
-                    continue
-                else:
-                    print('that is not working, please try again.')
-                    return
-            elif node_image == 'ETHSW24P':
-                # Manually created ethernet switch on 24 ports
-                ETHSW24P_ID = gns3_code_topology_data['ETHSW24P_ID']
-                IMAGE_ID = ETHSW24P_ID
-            else:
-                print('that is not working, please try again.')
-                exit()
-
-            r_create_node = requests.post(gns3_server + '/v2/projects/' + project_id + '/appliances/'
-                                          + IMAGE_ID, data=payload_coordinates)
-            if r_create_node:
-                r_create_node_dict = r_create_node.json()
-                new_node_id = r_create_node_dict['node_id']
-                print(new_node_id)
-
-                r_change_name = requests.put(gns3_server + '/v2/projects/' + project_id + '/nodes/'
-                                             + new_node_id, data=payload_create_node)
-
-                r_change_name_dict = r_change_name.json()
-                print(r_change_name_dict['name'], 'is created.')
-            else:
-                print(r_create_node)
-                print('that is not working, please try again.')
-                exit()
+            for key, value in gns3_appliances.items():
+                if node_image == key:
+                    # Built in GNS3
+                    if node_image == 'Cloud':
+                        cloud_payload = '{"name": "' + node_name + \
+                                        '", "node_type": "cloud", "compute_id": "local"}'
+                        cloud_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes',
+                                                data=cloud_payload)
+                        if cloud_r:
+                            cloud_r_dict = cloud_r.json()
+                            cloud_new_id = cloud_r_dict['node_id']
+                            print()
+                            print(node_name, 'is created.', cloud_new_id)
+                            print()
+                            continue
+                        else:
+                            print(cloud_r)
+                            print('that is not working, please try again.')
+                            return
+                    elif node_image == 'VPCS':
+                        vpcs_payload = '{"name": "' + node_name + \
+                                       '", "node_type": "vpcs", "compute_id": "local"}'
+                        vpcs_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes', data=vpcs_payload)
+                        if vpcs_r:
+                            vpcs_r_dict = vpcs_r.json()
+                            vpcs_new_id = vpcs_r_dict['node_id']
+                            print()
+                            print(node_name, 'is created.', vpcs_new_id)
+                            print()
+                            continue
+                        else:
+                            print(vpcs_r)
+                            print('that is not working, please try again.')
+                            return
+                    elif node_image == 'NAT':
+                        nat_payload = '{"name": "' + node_name + \
+                                      '", "node_type": "nat", "compute_id": "local"}'
+                        nat_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes', data=nat_payload)
+                        if nat_r:
+                            nat_r_dict = nat_r.json()
+                            nat_new_id = nat_r_dict['node_id']
+                            print()
+                            print(node_name, 'is created.', nat_new_id)
+                            print()
+                            continue
+                        else:
+                            print(nat_r)
+                            print('that is not working, please try again.')
+                            return
+                    elif node_image == 'Frame Relay switch':
+                        fr_sw_payload = '{"name": "' + node_name + \
+                                        '", "node_type": "frame_relay_switch", "compute_id": "local"}'
+                        fr_sw_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes',
+                                                data=fr_sw_payload)
+                        if fr_sw_r:
+                            fr_sw_r_dict = fr_sw_r.json()
+                            fr_sw_new_id = fr_sw_r_dict['node_id']
+                            print()
+                            print(node_name, 'is created.', fr_sw_new_id)
+                            print()
+                            continue
+                        else:
+                            print(fr_sw_r)
+                            print('that is not working, please try again.')
+                            return
+                    elif node_image == 'Ethernet hub':
+                        eth_hub_payload = '{"name": "' + node_name + \
+                                          '", "node_type": "ethernet_hub", "compute_id": "local"}'
+                        eth_hub_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes',
+                                                  data=eth_hub_payload)
+                        if eth_hub_r:
+                            eth_hub_r_dict = eth_hub_r.json()
+                            eth_hub_new_id = eth_hub_r_dict['node_id']
+                            print()
+                            print(node_name, 'is created.', eth_hub_new_id)
+                            print()
+                            continue
+                        else:
+                            print(eth_hub_r)
+                            print('that is not working, please try again.')
+                            return
+                    elif node_image == 'Ethernet switch':
+                        eth_sw_payload = '{"name": "' + node_name + \
+                                         '", "node_type": "ethernet_switch", "compute_id": "local"}'
+                        eth_sw_r = requests.post(gns3_server + '/v2/projects/' + project_id + '/nodes',
+                                                 data=eth_sw_payload)
+                        if eth_sw_r:
+                            eth_sw_r_dict = eth_sw_r.json()
+                            eth_sw_new_id = eth_sw_r_dict['node_id']
+                            print()
+                            print(node_name, 'is created.', eth_sw_new_id)
+                            print()
+                            continue
+                        else:
+                            print(eth_sw_r)
+                            print('that is not working, please try again.')
+                            return
+                    # Added manually
+                    else:
+                        appliance_id = value
+                        r_create_node = requests.post(gns3_server + '/v2/projects/' + project_id + '/appliances/'
+                                                      + appliance_id, data=payload_coordinates)
+                        if r_create_node:
+                            r_create_node_dict = r_create_node.json()
+                            new_node_id = r_create_node_dict['node_id']
+                            requests.put(gns3_server + '/v2/projects/' + project_id + '/nodes/' + new_node_id,
+                                         data=payload_create_node)
+                            print()
+                            print(node_name, 'is created.', new_node_id)
+                            print('#' * 100)
+                        else:
+                            print(r_create_node)
+                            print('that is not working, please try again.')
+                            exit()
         print('=' * 100)
 
 

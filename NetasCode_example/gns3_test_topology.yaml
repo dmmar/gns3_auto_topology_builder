@@ -12,69 +12,66 @@ MGMT-SW: 'MGMT-SW' # for [gns3_create_mgmt_links]
 
 global_delay_factor: 4
 
-# Assigned appliances IDs from GNS3 topology file
-# Manually created ethernet 'MGMT-SW' switch on 24 ports
-ETHSW24P_ID: '6b72e394-8d86-4e7c-976f-57da038e8145' # for [gns3_create_nodes]
+# Manually created ethernet 'MGMT-SW' switch on 24 ports on GNS3 server
+# ETH-SW-24P
 
-# Available appliances are IOSL2 (IOSvL2), IOSL3 (IOSv), VASA (vASA), VYOS118 (VyOS), and VSRX17R1 (vSRX)
-# Built-in appliances are VPCS (VPCS), CLOUD (Cloud), and ETHSW24P (Ethernet switch)
 gns3_nodes:
 # The following nodes will be created in the GNS3 project
 # ip_mgmt: - that IP uses for communication with the node via SSH
   # Node1
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-AC1
     ip_mgmt: 172.30.33.118
   # Node2
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-AC2
     ip_mgmt: 172.30.33.119
   # Node3
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-AC3
     ip_mgmt: 172.30.33.120
   # Node4
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-AC4
     ip_mgmt: 172.30.33.121
   # Node5
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-DIS1
     ip_mgmt: 172.30.33.123
   # Node6
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-DIS2
     ip_mgmt: 172.30.33.124
   # Node7
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-SF1
     ip_mgmt: 172.30.33.127
   # Node8
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: HQ-CO1
     ip_mgmt: 172.30.33.122
   # Node9
-  - appliance: IOSL2
+  - appliance: 'Cisco IOSvL2 15.2.4055'
     name: BR1-AC1
     ip_mgmt: 172.30.33.115
   # Node10
-  - appliance: IOSL3
+  - appliance: 'Cisco IOSv 15.6(2)T'
     name: ISP
     ip_mgmt: 172.30.33.128
   # Node11
-  - appliance: IOSL3
+  - appliance: 'Cisco IOSv 15.6(2)T'
     name: HQ-ED1
     ip_mgmt: 172.30.33.125
   # Node12
-  - appliance: VASA
+  - appliance: 'Cisco ASAv vasa_9_9_2'
     name: HQ-FW1
     ip_mgmt: 172.30.33.126
   # Node13
-  - appliance: VYOS118
+  - appliance: 'VyOS 1.1.8'
     name: BR1-ED1
     ip_mgmt: 172.30.33.116
   # Node14
-  - appliance: VSRX17R1
+  - appliance: 'vSRX 17.3R1'
     name: BR2-FW1
     ip_mgmt: 172.30.33.117
   # Node15
@@ -96,10 +93,10 @@ gns3_nodes:
   - appliance: VPCS
     name: BR2-C1
   # Node21
-  - appliance: ETHSW24P
+  - appliance: ETH-SW-24P
     name: MGMT-SW
   # Node22
-  - appliance: CLOUD
+  - appliance: Cloud
     name: CLOUD
   # Node23
   - appliance: VPCS

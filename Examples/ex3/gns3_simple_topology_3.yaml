@@ -1,9 +1,9 @@
 ---
-project_name: 'gns3_simple_topology_2'
+project_name: 'gns3_simple_topology_3'
 gns3_server: 'http://172.30.33.200:3080'
 gns3_host_ip: '172.30.33.200' # for [gns3_send_start_config_telnet]
-START_CFGS_PATH: 'Examples/ex2/SE2_startcfgs/' # for [gns3_send_start_config_telnet]
-MGMT-SW: # skip [gns3_create_mgmt_links]
+START_CFGS_PATH: 'Examples/ex3/SE3_startcfgs/' # for [gns3_send_start_config_telnet]
+MGMT-SW: 'MGMT-SW'
 
 # global_delay_factor for [gns3_send_start_config_telnet]
 # I used a global delay parameter because
@@ -17,21 +17,27 @@ gns3_nodes:
   # Node1
   - appliance: 'Cisco IOSv 15.6(2)T'
     name: R1
+    ip_mgmt: 172.30.33.147 # to connect via SSH from outside (Cloud)/also that is used to ping device
   # Node2
   - appliance: 'Cisco IOSv 15.6(2)T'
     name: R2
+    ip_mgmt: 172.30.33.148 # to connect via SSH from outside (Cloud)/also that is used to ping device
   # Node3
   - appliance: 'Cisco IOSv 15.6(2)T'
     name: R3
+    ip_mgmt: 172.30.33.149 # to connect via SSH from outside (Cloud)/also that is used to ping device
   # Node4
   - appliance: 'Cisco IOSvL2 15.2.4055'
     name: SW1
+    ip_mgmt: 172.30.33.150 # to connect via SSH from outside (Cloud)/also that is used to ping device
   # Node5
   - appliance: 'Cisco IOSvL2 15.2.4055'
     name: SW2
+    ip_mgmt: 172.30.33.151 # to connect via SSH from outside (Cloud)/also that is used to ping device
   # Node6
   - appliance: 'Cisco IOSvL2 15.2.4055'
     name: SW3
+    ip_mgmt: 172.30.33.152 # to connect via SSH from outside (Cloud)/also that is used to ping device
   # Node7
   - appliance: VPCS
     name: PC1
@@ -41,6 +47,12 @@ gns3_nodes:
   # Node9
   - appliance: VPCS
     name: PC3
+  # Node10
+  - appliance: Ethernet switch
+    name: MGMT-SW
+  # Node11
+  - appliance: Cloud
+    name: Cloud
 
 gns3_links:
 # The following link pairs describe P2P ethernet connections between nodes
@@ -103,5 +115,13 @@ gns3_startup_config_telnet:
   - name: PC2
   - name: PC3
 gns3_mgmt_links:
-# The following devices will be connected to the 'MGMT-SW:' for remote access via SSH
-  - name: # skip [gns3_create_mgmt_links]
+# The following devices will be connected to the 'MGMT-SW:' for remote access via SSH.
+# A default link for mgmt access on the device must be ['0' that is Gi0/0], on 'MGMT-SW' the link will be chosen by random.
+# The built-in 'ethernet switch' in GNS3 on 8 ports that means, if you have more than 8 devices which you want to connect,
+# you need to create a new switch with more ports.
+  - name: R1
+  - name: R2
+  - name: R3
+  - name: SW1
+  - name: SW2
+  - name: SW3

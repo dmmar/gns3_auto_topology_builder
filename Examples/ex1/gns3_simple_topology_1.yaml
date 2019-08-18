@@ -12,19 +12,16 @@ MGMT-SW: # skip [gns3_create_mgmt_links]
 
 global_delay_factor: 4
 
-# Available appliances are IOSL2 (IOSvL2), IOSL3 (IOSv), VASA (vASA), VYOS118 (VyOS), and VSRX17R1 (vSRX)
-# Built-in appliances are VPCS (VPCS), CLOUD (Cloud), and ETHSW24P (Ethernet switch)
 gns3_nodes:
 # The following nodes will be created in the GNS3 project
-# ip_mgmt: - that IP uses for communication with the node via SSH from outside
   # Node1
-  - appliance: IOSL3
+  - appliance: 'Cisco IOSv 15.6(2)T'
     name: R1
   # Node2
-  - appliance: IOSL3
+  - appliance: 'Cisco IOSv 15.6(2)T'
     name: R2
   # Node3
-  - appliance: IOSL3
+  - appliance: 'Cisco IOSv 15.6(2)T'
     name: R3
 
 gns3_links:
