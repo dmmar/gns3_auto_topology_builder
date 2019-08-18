@@ -27,7 +27,7 @@
     
 ## Getting Started
 
-    # git clone https://github.com/dmmar/gns3_auto_topology_builder
+    # git clone https://github.com/dmmar/gns3_auto_topology_builder.git
     # pip3 install -r requirements.txt
     
 ## Running simple examples:
