@@ -101,6 +101,11 @@ gns3_links:
     node1_interface: '0' # Eth0
     node2_name: SW3
     node2_interface: '2' # Gi0/2
+  # Pair10
+  - node1_name: MGMT-SW
+    node1_interface: '0' # Eth0
+    node2_name: Cloud
+    node2_interface: '0' # Eth0
 
 
 gns3_startup_config_telnet:

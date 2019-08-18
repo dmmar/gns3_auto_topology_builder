@@ -5,8 +5,12 @@ python3 gns3_deploy_topology.py -f Examples/ex1/gns3_simple_topology_1.yaml
 
 python3 gns3_deploy_topology.py -f Examples/ex2/gns3_simple_topology_2.yaml
 
+python3 gns3_deploy_topology.py -f Examples/ex3/gns3_simple_topology_3.yaml
+
 python3 gns3_deploy_topology.py -f NetasCode_example/gns3_dev_topology.yaml
 
 python3 gns3_deploy_topology.py -f NetasCode_example/gns3_test_topology.yaml
 
 python3 gns3_deploy_topology.py -f NetasCode_example/gns3_prod_topology.yaml
+
+python3 gns3_show_appliances.py -s http://172.30.33.200:3080
