@@ -2,7 +2,7 @@
 
 ## Overview
     
-   This repository contains a python3 script **[gns3_deploy_topology.py]**,
+   This repository contains a python3 script **[gns3_deploy_topology.py]**
    that is used to deploy a GNS3 topology from a YAML file.
    
    The auto_builder can be useful in combination with CI/CD. For example, to build a development environment for a Network Engineer.
