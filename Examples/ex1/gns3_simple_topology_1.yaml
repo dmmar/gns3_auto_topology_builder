@@ -1,7 +1,7 @@
 ---
 project_name: 'gns3_simple_topology_1'
-gns3_server: 'http://172.30.33.200:3080'
-gns3_host_ip: '172.30.33.200' # for [gns3_send_start_config_telnet]
+gns3_server: 'http://172.16.253.1:3080'
+gns3_host_ip: '172.16.253.1' # for [gns3_send_start_config_telnet]
 START_CFGS_PATH: 'Examples/ex1/SE1_startcfgs/' # for [gns3_send_start_config_telnet]
 MGMT-SW: # skip [gns3_create_mgmt_links]
 
@@ -10,7 +10,7 @@ MGMT-SW: # skip [gns3_create_mgmt_links]
 # my GNS3 server is located far away from me (380>= latency).
 # info https://ktbyers.github.io/netmiko/docs/netmiko/
 
-global_delay_factor: 4
+global_delay_factor: 1
 
 gns3_nodes:
 # The following nodes will be created in the GNS3 project
