@@ -11,7 +11,7 @@
    
    You can find some examples in [Examples](https://github.com/dmmar/gns3_auto_topology_builder/blob/master/Examples) and [NetasCode_example](https://github.com/dmmar/gns3_auto_topology_builder/blob/master/NetasCode_example) folders.
    
-   **Tested on [GNS3 2.1.21] and appliances such as Cisco IOSv, IOSvL2, vASA 9.9.2, VyOS 1.1.8 and JunOS vSRX 17.3R1.**
+   **Tested on [GNS3 2.1.21 and 2.2.7] and appliances such as Cisco IOSv, IOSvL2, vASA 9.9.2, VyOS 1.1.8 and JunOS vSRX 17.3R1.**
 
    *The script does not support GNS3 server authentication login/pass for now.*
    
@@ -38,6 +38,7 @@
     Those appliances names you can copy and paste to the topology file (.yaml).
     * I have used mine GNS3 server IP, appliances names and IP addresses to make these examples. For you they can be different.*
     
+    *[GNS3 2.1.21]*
     Use the following to get appliances names/ids:
     # python3 gns3_show_appliances.py -s http://[<IP>:<port>]
     For example, # python3 gns3_show_appliances.py -s http://172.30.33.200:3080
@@ -50,6 +51,20 @@
     # python3 gns3_deploy_topology.py -f Examples/ex2/gns3_simple_topology_2.yaml
     # python3 gns3_deploy_topology.py -f Examples/ex3/gns3_simple_topology_3.yaml
     
+    *[GNS3 2.2.7]*
+    
+    Use the following to get appliances names/ids:
+    # python3 gns3_show_appliances_v1_1.py -s http://[<IP>:<port>]
+    For example, # python3 gns3_show_appliances_v1_1.py -s http://172.30.33.200:3080
+    
+    [Simple examples:]
+    * Please, before run a script look at the topology file (.yaml) and the diagram (.png)
+    Also, please read * Important notes section *
+    
+    # python3 gns3_deploy_topology_v1_1.py -f Examples/ex1/gns3_simple_topology_1.yaml
+    # python3 gns3_deploy_topology_v1_1.py -f Examples/ex2/gns3_simple_topology_2.yaml
+    # python3 gns3_deploy_topology_v1_1.py -f Examples/ex3/gns3_simple_topology_3.yaml
+    
 ## Running NetasCode example:
 
     You can use this example to deploy GNS3 topologies for dev/test/prod env. of the virtual fictional company 'X' and play with network automation.
@@ -60,9 +75,15 @@
     * I have used mine GNS3 server IP, appliances names and IP addresses to make the example. For you they can be different.*
     Also, please read * Important notes section *
     
+    *[GNS3 2.1.21]*
     # python3 gns3_deploy_topology.py -f NetasCode_example/gns3_dev_topology.yaml
     # python3 gns3_deploy_topology.py -f NetasCode_example/gns3_test_topology.yaml
     # python3 gns3_deploy_topology.py -f NetasCode_example/gns3_prod_topology.yaml
+    
+    *[GNS3 2.2.7]*
+    # python3 gns3_deploy_topology_v1_1.py -f NetasCode_example/gns3_dev_topology.yaml
+    # python3 gns3_deploy_topology_v1_1.py -f NetasCode_example/gns3_test_topology.yaml
+    # python3 gns3_deploy_topology_v1_1.py -f NetasCode_example/gns3_prod_topology.yaml
     
 ## Important notes:
     
